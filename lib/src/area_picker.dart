@@ -389,20 +389,35 @@ class _AreaSelectionState extends State<AreaSelection> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('取消'),
+//                GestureDetector(
+//                  onTap: () {
+//                    Navigator.of(context).pop();
+//                  },
+//                  child: Text('取消'),
+//                ),
+                SizedBox(
+                  width: 50.0,
+                ),
+                Flexible(
+                  child: Text('请选择区域'),
                 ),
                 GestureDetector(
                   onTap: () {
                     widget.onSelect(tempAreaInfo);
                     Navigator.of(context).pop();
                   },
-                  child: Text(
-                    '确认',
-                    style: TextStyle(color: Colors.red),
+                  child: Container(
+                    width: 50.0,
+                    height: 25.0,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.all(Radius.circular(2.0)),
+                    ),
+                    child: Text(
+                      '确定',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
