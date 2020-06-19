@@ -1,10 +1,10 @@
+import 'package:area_picker/src/utils.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:region_picker/region_picker.dart';
 
 void main() {
   setUp(() {});
   testWidgets('load data', (WidgetTester tester) async {
-    await loadData();
+    final data = loadData();
+    print(data);
   });
-  test('load data', () async {});
 }
