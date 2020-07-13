@@ -19,16 +19,16 @@ class AreaInfo {
   final int countyIndex;
 
   String get address =>
-      '${provice.name ?? ''}${city.name ?? ''}${county.name ?? ''}';
+      '${provice?.name ?? ''}${city?.name ?? ''}${county?.name ?? ''}';
 
   AreaInfo(
-    this.provice,
-    this.city,
-    this.county,
-    this.proviceIndex,
-    this.cityIndex,
-    this.countyIndex,
-  );
+      this.provice,
+      this.city,
+      this.county,
+      this.proviceIndex,
+      this.cityIndex,
+      this.countyIndex,
+      );
 }
 
 typedef AreaSelectedCallback = void Function(AreaInfo areaInfo);
@@ -91,17 +91,17 @@ class _AreaSelectionState extends State<AreaSelection> {
     showConty = widget.showConty ?? true;
 
     citys = provices[selectedProvice].childs;
-    county = citys[selectedCity].childs;
+    county = citys.length > selectedCity ? citys[selectedCity].childs : [];
     proviceCotroller = new FixedExtentScrollController(
         initialItem: widget.initProviceIndex ?? 0);
     cityController =
-        new FixedExtentScrollController(initialItem: widget.initCityIndex ?? 0);
+    new FixedExtentScrollController(initialItem: widget.initCityIndex ?? 0);
     countyController = new FixedExtentScrollController(
         initialItem: widget.initCountyIndex ?? 0);
     tempAreaInfo = AreaInfo(
-      provices[selectedProvice],
-      citys[selectedCity],
-      county[selectedCounty],
+      provices.length > selectedProvice ? provices[selectedProvice]: null,
+      citys.length > selectedCity ? citys[selectedCity] : null,
+      county.length > selectedCounty ? county[selectedCounty] : null,
       selectedProvice,
       selectedCity,
       selectedCounty,
@@ -112,9 +112,9 @@ class _AreaSelectionState extends State<AreaSelection> {
   void passParams() {
     setState(() {
       tempAreaInfo = AreaInfo(
-        provices[selectedProvice],
-        citys[selectedCity],
-        county[selectedCounty],
+        provices.length > selectedProvice ? provices[selectedProvice]: null,
+        citys.length > selectedCity ? citys[selectedCity] : null,
+        county.length > selectedCounty ? county[selectedCounty] : null,
         selectedProvice,
         selectedCity,
         selectedCounty,
@@ -125,6 +125,7 @@ class _AreaSelectionState extends State<AreaSelection> {
   @override
   Widget build(BuildContext context) {
     final list = <Widget>[
+
       Expanded(
         flex: 1,
         child: CupertinoPicker(
@@ -135,9 +136,13 @@ class _AreaSelectionState extends State<AreaSelection> {
           onSelectedItemChanged: (position) {
             setState(() {
               selectedProvice = position;
-              citys = provices[selectedProvice].childs;
+              citys = provices[selectedProvice].childs ?? [];
               selectedCity = 0;
-              county = citys[selectedCity].childs;
+              if(citys.length > 0) {
+                county = citys[selectedCity].childs ?? [];
+              } else {
+                county = [];
+              }
             });
             cityController.jumpToItem(0);
             countyController.jumpToItem(0);
@@ -156,7 +161,7 @@ class _AreaSelectionState extends State<AreaSelection> {
             setState(() {
               selectedCity = position;
               selectedCounty = 0;
-              county = citys[selectedCity].childs;
+              county = citys[selectedCity].childs ?? [];
             });
             countyController.jumpToItem(0);
             passParams();
@@ -247,6 +252,10 @@ List<Widget> createEachItem(List<AreaModel> data) {
         style: TextStyle(fontSize: 14.0),
       ),
     ));
+  }
+
+  if(target.length == 0) {
+    target.add(SizedBox());
   }
 
   return target;
