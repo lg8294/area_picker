@@ -16,6 +16,6 @@ class AreaModel {
   Map toJson() => {
         "id": id,
         "name": name,
-        "childs": childs,
+        "childs": childs.map((e) => e.toJson()).toList(),
       };
 }

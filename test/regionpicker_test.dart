@@ -5,6 +5,6 @@ void main() {
   setUp(() {});
   testWidgets('load data', (WidgetTester tester) async {
     final data = loadData();
-    print(data);
+    print(data.map((e) => e.toJson()).toList());
   });
 }
