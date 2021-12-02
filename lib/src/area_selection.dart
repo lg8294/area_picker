@@ -3,50 +3,55 @@ import 'package:area_picker/src/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final _provices = loadData();
+final _provinces = loadData();
 
 class AreaInfo {
-  final AreaModel provice;
+  final AreaModel province;
   final AreaModel city;
   final AreaModel county;
 
-  int get proviceId => provice.id;
+  int get provinceId => province.id;
   int get cityId => city.id;
   int get countyId => county.id;
 
-  final int proviceIndex;
+  final int provinceIndex;
   final int cityIndex;
   final int countyIndex;
 
   String get address =>
-      '${provice?.name ?? ''}${city?.name ?? ''}${county?.name ?? ''}';
+      '${province?.name ?? ''}${city?.name ?? ''}${county?.name ?? ''}';
 
   AreaInfo(
-      this.provice,
-      this.city,
-      this.county,
-      this.proviceIndex,
-      this.cityIndex,
-      this.countyIndex,
-      );
+    this.province,
+    this.city,
+    this.county,
+    this.provinceIndex,
+    this.cityIndex,
+    this.countyIndex,
+  );
+
+  @override
+  String toString() {
+    return address;
+  }
 }
 
 typedef AreaSelectedCallback = void Function(AreaInfo areaInfo);
 
 class AreaSelection extends StatefulWidget {
   final AreaSelectedCallback onSelect;
-  final int initProviceIndex;
+  final int initProvinceIndex;
   final int initCityIndex;
   final int initCountyIndex;
-  final bool showConty;
+  final bool showCounty;
 
   AreaSelection({
     Key key,
     @required this.onSelect,
-    this.initProviceIndex,
+    this.initProvinceIndex,
     this.initCityIndex,
     this.initCountyIndex,
-    this.showConty = true,
+    this.showCounty = true,
   }) : super(key: key);
 
   @override
@@ -54,12 +59,12 @@ class AreaSelection extends StatefulWidget {
 }
 
 class _AreaSelectionState extends State<AreaSelection> {
-  List<AreaModel> provices = _provices;
-  List<AreaModel> citys = [];
-  List<AreaModel> county = [];
+  List<AreaModel> provinces = _provinces;
+  List<AreaModel> cities = [];
+  List<AreaModel> counties = [];
 
   ///选中的省份的index
-  int selectedProvice = 0;
+  int selectedProvince = 0;
 
   ///选中的市的index
   int selectedCity = 0;
@@ -68,7 +73,7 @@ class _AreaSelectionState extends State<AreaSelection> {
   int selectedCounty = 0;
 
   ///定义省份控制器
-  FixedExtentScrollController proviceCotroller;
+  FixedExtentScrollController provinceController;
 
   ///定义市控制器
   FixedExtentScrollController cityController;
@@ -77,45 +82,47 @@ class _AreaSelectionState extends State<AreaSelection> {
   FixedExtentScrollController countyController;
 
   /// 选择变化时候的值
-//  Map tempAreaInfo;
   AreaInfo tempAreaInfo;
 
-  bool showConty;
+  bool showCounty;
 
   @override
   void initState() {
     super.initState();
-    selectedProvice = widget.initProviceIndex ?? 0;
+    selectedProvince = widget.initProvinceIndex ?? 0;
     selectedCity = widget.initCityIndex ?? 0;
     selectedCounty = widget.initCountyIndex ?? 0;
-    showConty = widget.showConty ?? true;
+    showCounty = widget.showCounty ?? true;
 
-    citys = provices[selectedProvice].childs;
-    county = citys.length > selectedCity ? citys[selectedCity].childs : [];
-    proviceCotroller = new FixedExtentScrollController(
-        initialItem: widget.initProviceIndex ?? 0);
+    cities = provinces[selectedProvince].children;
+    counties =
+        cities.length > selectedCity ? cities[selectedCity].children : [];
+    provinceController = new FixedExtentScrollController(
+        initialItem: widget.initProvinceIndex ?? 0);
     cityController =
-    new FixedExtentScrollController(initialItem: widget.initCityIndex ?? 0);
+        new FixedExtentScrollController(initialItem: widget.initCityIndex ?? 0);
     countyController = new FixedExtentScrollController(
         initialItem: widget.initCountyIndex ?? 0);
     tempAreaInfo = AreaInfo(
-      provices.length > selectedProvice ? provices[selectedProvice]: null,
-      citys.length > selectedCity ? citys[selectedCity] : null,
-      county.length > selectedCounty ? county[selectedCounty] : null,
-      selectedProvice,
+      provinces.length > selectedProvince ? provinces[selectedProvince] : null,
+      cities.length > selectedCity ? cities[selectedCity] : null,
+      counties.length > selectedCounty ? counties[selectedCounty] : null,
+      selectedProvince,
       selectedCity,
       selectedCounty,
     );
   }
 
   ///给父组件传递结果
-  void passParams() {
+  void _passParams() {
     setState(() {
       tempAreaInfo = AreaInfo(
-        provices.length > selectedProvice ? provices[selectedProvice]: null,
-        citys.length > selectedCity ? citys[selectedCity] : null,
-        county.length > selectedCounty ? county[selectedCounty] : null,
-        selectedProvice,
+        provinces.length > selectedProvince
+            ? provinces[selectedProvince]
+            : null,
+        cities.length > selectedCity ? cities[selectedCity] : null,
+        counties.length > selectedCounty ? counties[selectedCounty] : null,
+        selectedProvince,
         selectedCity,
         selectedCounty,
       );
@@ -125,30 +132,29 @@ class _AreaSelectionState extends State<AreaSelection> {
   @override
   Widget build(BuildContext context) {
     final list = <Widget>[
-
       Expanded(
         flex: 1,
         child: CupertinoPicker(
           backgroundColor: Colors.white,
           diameterRatio: 1.1,
-          scrollController: proviceCotroller,
+          scrollController: provinceController,
           itemExtent: 48.0,
           onSelectedItemChanged: (position) {
             setState(() {
-              selectedProvice = position;
-              citys = provices[selectedProvice].childs ?? [];
+              selectedProvince = position;
+              cities = provinces[selectedProvince].children ?? [];
               selectedCity = 0;
-              if(citys.length > 0) {
-                county = citys[selectedCity].childs ?? [];
+              if (cities.length > 0) {
+                counties = cities[selectedCity].children ?? [];
               } else {
-                county = [];
+                counties = [];
               }
             });
             cityController.jumpToItem(0);
             countyController.jumpToItem(0);
-            passParams();
+            _passParams();
           },
-          children: createEachItem(provices),
+          children: _createEachItem(provinces),
         ),
       ),
       Expanded(
@@ -161,16 +167,16 @@ class _AreaSelectionState extends State<AreaSelection> {
             setState(() {
               selectedCity = position;
               selectedCounty = 0;
-              county = citys[selectedCity].childs ?? [];
+              counties = cities[selectedCity].children ?? [];
             });
             countyController.jumpToItem(0);
-            passParams();
+            _passParams();
           },
-          children: createEachItem(citys),
+          children: _createEachItem(cities),
         ),
       ),
     ];
-    if (showConty) {
+    if (showCounty) {
       list.add(Expanded(
         flex: 1,
         child: CupertinoPicker(
@@ -179,9 +185,9 @@ class _AreaSelectionState extends State<AreaSelection> {
           itemExtent: 48.0,
           onSelectedItemChanged: (position) {
             selectedCounty = position;
-            passParams();
+            _passParams();
           },
-          children: createEachItem(county),
+          children: _createEachItem(counties),
         ),
       ));
     }
@@ -241,20 +247,21 @@ class _AreaSelectionState extends State<AreaSelection> {
   }
 }
 
-List<Widget> createEachItem(List<AreaModel> data) {
+List<Widget> _createEachItem(List<AreaModel> data) {
   List<Widget> target = [];
 
   for (AreaModel item in data) {
     target.add(Container(
-      padding: EdgeInsets.only(top: 14.0, bottom: 10.0),
-      child: Text(
-        item.name ?? '',
-        style: TextStyle(fontSize: 14.0),
+      child: Center(
+        child: Text(
+          item.name ?? '',
+          style: TextStyle(fontSize: 14.0),
+        ),
       ),
     ));
   }
 
-  if(target.length == 0) {
+  if (target.length == 0) {
     target.add(SizedBox());
   }
 

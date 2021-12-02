@@ -13,7 +13,7 @@ List<AreaModel> loadData() {
             return MapEntry<String, Map<String, dynamic>>(key, {
               'id': int.parse(key),
               'name': value,
-              'childs': child,
+              'children': child,
             });
           })
           .values
@@ -23,7 +23,7 @@ List<AreaModel> loadData() {
     }
   }
 
-  List<AreaModel> getProvice(String key, {Map data}) {
+  List<AreaModel> getProvince(String key, {Map data}) {
     data ??= _data;
     final node = data[key];
     if (node != null && node is Map) {
@@ -35,7 +35,7 @@ List<AreaModel> loadData() {
                 AreaModel.fromMap({
                   'id': int.parse(key),
                   'name': value,
-                  'childs': child,
+                  'children': child,
                 }));
           })
           .values
@@ -45,5 +45,5 @@ List<AreaModel> loadData() {
     }
   }
 
-  return getProvice('86');
+  return getProvince('86');
 }
