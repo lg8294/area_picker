@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 final _provinces = loadData();
 
 class AreaInfo {
-  final AreaModel province;
-  final AreaModel city;
-  final AreaModel county;
+  final AreaModel? province;
+  final AreaModel? city;
+  final AreaModel? county;
 
-  int get provinceId => province.id;
-  int get cityId => city.id;
-  int get countyId => county.id;
+  int? get provinceId => province?.id;
+  int? get cityId => city?.id;
+  int? get countyId => county?.id;
 
   final int provinceIndex;
   final int cityIndex;
@@ -36,7 +36,7 @@ class AreaInfo {
   }
 }
 
-typedef AreaSelectedCallback = void Function(AreaInfo areaInfo);
+typedef AreaSelectedCallback = void Function(AreaInfo? areaInfo);
 
 class AreaSelection extends StatefulWidget {
   final AreaSelectedCallback onSelect;
@@ -46,11 +46,11 @@ class AreaSelection extends StatefulWidget {
   final bool showCounty;
 
   AreaSelection({
-    Key key,
-    @required this.onSelect,
-    this.initProvinceIndex,
-    this.initCityIndex,
-    this.initCountyIndex,
+    Key? key,
+    /*required*/ required this.onSelect,
+    this.initProvinceIndex = 0,
+    this.initCityIndex = 0,
+    this.initCountyIndex = 0,
     this.showCounty = true,
   }) : super(key: key);
 
@@ -64,52 +64,59 @@ class _AreaSelectionState extends State<AreaSelection> {
   List<AreaModel> counties = [];
 
   ///选中的省份的index
-  int selectedProvince = 0;
+  late int selectedProvinceIndex;
 
   ///选中的市的index
-  int selectedCity = 0;
+  late int selectedCityIndex;
 
   ///选中的区的index
-  int selectedCounty = 0;
+  late int selectedCountyIndex;
 
   ///定义省份控制器
-  FixedExtentScrollController provinceController;
+  late final FixedExtentScrollController provinceController;
 
   ///定义市控制器
-  FixedExtentScrollController cityController;
+  late final FixedExtentScrollController cityController;
 
   ///定义区控制器
-  FixedExtentScrollController countyController;
+  late final FixedExtentScrollController countyController;
 
   /// 选择变化时候的值
-  AreaInfo tempAreaInfo;
+  AreaInfo? tempAreaInfo;
 
-  bool showCounty;
+  late bool showCounty;
 
   @override
   void initState() {
     super.initState();
-    selectedProvince = widget.initProvinceIndex ?? 0;
-    selectedCity = widget.initCityIndex ?? 0;
-    selectedCounty = widget.initCountyIndex ?? 0;
-    showCounty = widget.showCounty ?? true;
+    selectedProvinceIndex = widget.initProvinceIndex;
+    selectedCityIndex = widget.initCityIndex;
+    selectedCountyIndex = widget.initCountyIndex;
+    showCounty = widget.showCounty;
 
-    cities = provinces[selectedProvince].children;
-    counties =
-        cities.length > selectedCity ? cities[selectedCity].children : [];
-    provinceController = new FixedExtentScrollController(
-        initialItem: widget.initProvinceIndex ?? 0);
+    cities = provinces[selectedProvinceIndex].children ?? [];
+    counties = cities.length > selectedCityIndex
+        ? (cities[selectedCityIndex].children ?? [])
+        : [];
+
+    provinceController =
+        FixedExtentScrollController(initialItem: selectedProvinceIndex);
     cityController =
-        new FixedExtentScrollController(initialItem: widget.initCityIndex ?? 0);
-    countyController = new FixedExtentScrollController(
-        initialItem: widget.initCountyIndex ?? 0);
+        FixedExtentScrollController(initialItem: selectedCityIndex);
+    countyController =
+        FixedExtentScrollController(initialItem: selectedCountyIndex);
+
     tempAreaInfo = AreaInfo(
-      provinces.length > selectedProvince ? provinces[selectedProvince] : null,
-      cities.length > selectedCity ? cities[selectedCity] : null,
-      counties.length > selectedCounty ? counties[selectedCounty] : null,
-      selectedProvince,
-      selectedCity,
-      selectedCounty,
+      provinces.length > selectedProvinceIndex
+          ? provinces[selectedProvinceIndex]
+          : null,
+      cities.length > selectedCityIndex ? cities[selectedCityIndex] : null,
+      counties.length > selectedCountyIndex
+          ? counties[selectedCountyIndex]
+          : null,
+      selectedProvinceIndex,
+      selectedCityIndex,
+      selectedCountyIndex,
     );
   }
 
@@ -117,14 +124,16 @@ class _AreaSelectionState extends State<AreaSelection> {
   void _passParams() {
     setState(() {
       tempAreaInfo = AreaInfo(
-        provinces.length > selectedProvince
-            ? provinces[selectedProvince]
+        provinces.length > selectedProvinceIndex
+            ? provinces[selectedProvinceIndex]
             : null,
-        cities.length > selectedCity ? cities[selectedCity] : null,
-        counties.length > selectedCounty ? counties[selectedCounty] : null,
-        selectedProvince,
-        selectedCity,
-        selectedCounty,
+        cities.length > selectedCityIndex ? cities[selectedCityIndex] : null,
+        counties.length > selectedCountyIndex
+            ? counties[selectedCountyIndex]
+            : null,
+        selectedProvinceIndex,
+        selectedCityIndex,
+        selectedCountyIndex,
       );
     });
   }
@@ -141,14 +150,14 @@ class _AreaSelectionState extends State<AreaSelection> {
           itemExtent: 48.0,
           onSelectedItemChanged: (position) {
             setState(() {
-              selectedProvince = position;
-              cities = provinces[selectedProvince].children ?? [];
-              selectedCity = 0;
-              if (cities.length > 0) {
-                counties = cities[selectedCity].children ?? [];
-              } else {
-                counties = [];
-              }
+              selectedProvinceIndex = position;
+              cities = provinces[selectedProvinceIndex].children ?? [];
+              selectedCityIndex = 0;
+
+              counties = cities.length > selectedCityIndex
+                  ? cities[selectedCityIndex].children ?? []
+                  : [];
+              selectedProvinceIndex = 0;
             });
             cityController.jumpToItem(0);
             countyController.jumpToItem(0);
@@ -165,9 +174,9 @@ class _AreaSelectionState extends State<AreaSelection> {
           itemExtent: 48.0,
           onSelectedItemChanged: (position) {
             setState(() {
-              selectedCity = position;
-              selectedCounty = 0;
-              counties = cities[selectedCity].children ?? [];
+              selectedCityIndex = position;
+              selectedCountyIndex = 0;
+              counties = cities[selectedCityIndex].children ?? [];
             });
             countyController.jumpToItem(0);
             _passParams();
@@ -184,7 +193,7 @@ class _AreaSelectionState extends State<AreaSelection> {
           scrollController: countyController,
           itemExtent: 48.0,
           onSelectedItemChanged: (position) {
-            selectedCounty = position;
+            selectedCountyIndex = position;
             _passParams();
           },
           children: _createEachItem(counties),
@@ -251,18 +260,16 @@ List<Widget> _createEachItem(List<AreaModel> data) {
   List<Widget> target = [];
 
   for (AreaModel item in data) {
-    target.add(Container(
-      child: Center(
-        child: Text(
-          item.name ?? '',
-          style: TextStyle(fontSize: 14.0),
-        ),
+    target.add(Center(
+      child: Text(
+        item.name ?? '',
+        style: TextStyle(fontSize: 14.0),
       ),
     ));
   }
 
   if (target.length == 0) {
-    target.add(SizedBox());
+    target.add(Center());
   }
 
   return target;

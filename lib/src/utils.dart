@@ -3,7 +3,7 @@ import 'package:area_picker/src/model/area_model.dart';
 
 List<AreaModel> loadData() {
   final _data = areaData;
-  List<Map<String, dynamic>> getNodes(String key, {Map data}) {
+  List<Map<String, dynamic>> getNodes(String key, {Map? data}) {
     data ??= _data;
     final node = data[key];
     if (node != null && node is Map) {
@@ -19,11 +19,11 @@ List<AreaModel> loadData() {
           .values
           .toList();
     } else {
-      return null;
+      return [];
     }
   }
 
-  List<AreaModel> getProvince(String key, {Map data}) {
+  List<AreaModel> getProvince(String key, {Map? data}) {
     data ??= _data;
     final node = data[key];
     if (node != null && node is Map) {
@@ -41,7 +41,7 @@ List<AreaModel> loadData() {
           .values
           .toList();
     } else {
-      return null;
+      return [];
     }
   }
 
