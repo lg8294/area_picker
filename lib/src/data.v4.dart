@@ -1,3 +1,4 @@
+/// 中国大陆省、市、县数据
 const Map<String, dynamic> areaData = {
   "86": {
     "110000": "北京市",

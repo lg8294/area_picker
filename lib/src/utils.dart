@@ -1,6 +1,7 @@
 import 'package:area_picker/src/data.v4.dart';
 import 'package:area_picker/src/model/area_model.dart';
 
+/// 加载中国大陆省、市、县数据
 List<AreaModel> loadData() {
   final _data = areaData;
   List<Map<String, dynamic>> getNodes(String key, {Map? data}) {

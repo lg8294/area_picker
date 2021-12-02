@@ -256,6 +256,7 @@ class _AreaSelectionState extends State<AreaSelection> {
   }
 }
 
+/// 创建选项
 List<Widget> _createEachItem(List<AreaModel> data) {
   List<Widget> target = [];
 

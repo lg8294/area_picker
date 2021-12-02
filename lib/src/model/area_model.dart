@@ -1,3 +1,4 @@
+/// 区域模型
 class AreaModel {
   int? id;
   String? name;
