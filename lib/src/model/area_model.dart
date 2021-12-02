@@ -8,9 +8,8 @@ class AreaModel {
     AreaModel invoiceAreaBean = AreaModel();
     invoiceAreaBean.id = map['id'];
     invoiceAreaBean.name = map['name'];
-    invoiceAreaBean.children = List()
-      ..addAll(
-          (map['children'] as List ?? []).map((o) => AreaModel.fromMap(o)));
+    invoiceAreaBean.children = []..addAll(
+        (map['children'] as List ?? []).map((o) => AreaModel.fromMap(o)));
     return invoiceAreaBean;
   }
 

@@ -1,7 +1,6 @@
 name: area_picker
 description: A new Flutter area picker package.
 version: 0.0.2
-author: lg
 homepage: http://gitlab.hwkj-devops.svc.cluster.local:30418/kangfx/app/area_picker.git
 
 environment:
